@@ -2,12 +2,15 @@ package com.plutinosoft.platinum;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 
 public class UPnP {
     public static final String TAG = "PlatinumDLNA";
     public static final String VERSION_OF_PLATITUMDLNA = "1.0.2";
 
-
+    ArrayList<String> DmsList = new ArrayList();
+    ArrayList<String> DmrList = new ArrayList();
 
     public UPnP() {
         cSelf = _init();
@@ -25,8 +28,12 @@ public class UPnP {
         return _setms();
     }
 
-    public String getms() {
-        return _getms();
+    public ArrayList<String> getDmsList() {
+        return DmsList;
+    }
+
+    public ArrayList<String> getDmrList() {
+        return DmrList;
     }
 
     public boolean checkVersion(String[] version) {
@@ -40,15 +47,21 @@ public class UPnP {
     }
 
     public void onDmsAdded(String device){
-        Log.d(TAG, "message from JNI native,device = " + device);
+        Log.d(TAG, "dms added,device = " + device);
+        DmsList.add(device);
+    }
+
+    public void onDmrAdded(String device){
+        Log.d(TAG, "dmr added,device = " + device);
+        DmrList.add(device);
     }
 
     // C glue
     private native long _init();
     private native int _start(long self);
     private native int _stop(long self);
-    private native String _setms();
-    private native String _getms();
+    private native String _setActiveDms();
+    private native String _setActiveDmr();
 	private native String _checkVersion();
 	
     private final long cSelf;
