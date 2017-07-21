@@ -16,6 +16,23 @@ android {
             }
         }
     }
+
+    signingConfigs {
+        release {
+            storeFile file("/work/github/laboratory/Collections_of_wifidisplay/PlatinumDLNA/platinumdlna.jks")
+            storePassword '12345678'
+            keyAlias 'platinumdlna'
+            keyPassword '12345678'
+        }
+
+        debug {
+            storeFile file("/work/github/laboratory/Collections_of_wifidisplay/PlatinumDLNA/platinumdlna.jks")
+            storePassword '12345678'
+            keyAlias 'platinumdlna'
+            keyPassword '12345678'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
