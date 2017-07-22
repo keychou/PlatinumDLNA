@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Created by klein on 17-7-21.
  */
 
-public class UPnpWrapper extends UPnP {
+public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener {
 
     public static final String TAG = "PlatinumDLNA.UW";
 
@@ -19,6 +19,7 @@ public class UPnpWrapper extends UPnP {
     public UPnpWrapper(){
 
         uPnP = new UPnP();
+        uPnP.setDeviceStatusChangeListener(this);
     }
 
     public int start() {
@@ -45,8 +46,15 @@ public class UPnpWrapper extends UPnP {
         return uPnP.checkVersion(version);
     }
 
+
+    @Override
     public void onDmsAdded(String device){
-        Log.d(TAG, "message from JNI native,device = " + device);
+        Log.d(TAG, "dms add,device = " + device);
+    }
+
+    @Override
+    public void onDmrAdded(String device){
+        Log.d(TAG, "dmr add,device = " + device);
     }
 
 }

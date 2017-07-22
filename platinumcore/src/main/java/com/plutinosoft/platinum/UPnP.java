@@ -12,6 +12,19 @@ public class UPnP {
     ArrayList<String> DmsList = new ArrayList();
     ArrayList<String> DmrList = new ArrayList();
 
+
+    public interface DeviceStatusChangeListener{
+        public void onDmsAdded(String device);
+        public void onDmrAdded(String device);
+    }
+
+
+    private DeviceStatusChangeListener mListener;
+
+    public void setDeviceStatusChangeListener(DeviceStatusChangeListener listener){
+        mListener = listener;
+    }
+
     public UPnP() {
         cSelf = _init();
     }
@@ -52,12 +65,15 @@ public class UPnP {
 
     public void onDmsAdded(String device){
         Log.d(TAG, "dms added,device = " + device);
-        DmsList.add(device);
+        mListener.onDmsAdded(device);
+        //DmsList.add(device);
     }
 
     public void onDmrAdded(String device){
         Log.d(TAG, "dmr added,device = " + device);
-        DmrList.add(device);
+        //DmrList.add(device);
+        mListener.onDmrAdded(device);
+
     }
 
     // C glue
