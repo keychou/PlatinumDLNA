@@ -29,8 +29,8 @@ public class UPnpWrapper extends UPnP {
         return uPnP.stop();
     }
 
-    public String setms() {
-        return uPnP.setms();
+    public int setActiveDms(String device){
+        return uPnP.setActiveDms(device);
     }
 
     public ArrayList getDmsList() {

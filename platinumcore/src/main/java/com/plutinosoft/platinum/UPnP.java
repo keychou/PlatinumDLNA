@@ -24,8 +24,12 @@ public class UPnP {
         return _stop(cSelf);
     }
 
-    public String setms() {
-        return _setms();
+    public int setActiveDms(String device) {
+        return _setActiveDms(device);
+    }
+
+    public int setActiveDmr(String device) {
+        return _setActiveDmr(device);
     }
 
     public ArrayList<String> getDmsList() {
@@ -60,8 +64,8 @@ public class UPnP {
     private native long _init();
     private native int _start(long self);
     private native int _stop(long self);
-    private native String _setActiveDms();
-    private native String _setActiveDmr();
+    private native int _setActiveDms(String device);
+    private native int _setActiveDmr(String device);
 	private native String _checkVersion();
 	
     private final long cSelf;
