@@ -1,10 +1,15 @@
 package com.quectel.platinumdlna;
 
+import android.os.Handler;
 import android.util.Log;
 
+import com.plutinosoft.platinum.PltDeviceData;
+import com.plutinosoft.platinum.Registrant;
+import com.plutinosoft.platinum.RegistrantList;
 import com.plutinosoft.platinum.UPnP;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by klein on 17-7-21.
@@ -15,6 +20,11 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
     public static final String TAG = "PlatinumDLNA.UW";
 
     UPnP uPnP;
+
+    ArrayList<PltDeviceData> DmsList = new ArrayList<PltDeviceData>();
+    ArrayList<PltDeviceData> DmrList = new ArrayList<PltDeviceData>();
+
+    protected RegistrantList mDeviceStatusRegistrants = new RegistrantList();
 
     public UPnpWrapper(){
 
@@ -35,11 +45,11 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
     }
 
     public ArrayList getDmsList() {
-        return uPnP.getDmsList();
+        return DmsList;
     }
 
     public ArrayList getDmrList() {
-        return uPnP.getDmrList();
+        return DmrList;
     }
 
     public boolean checkVersion(String[] version) {
@@ -48,13 +58,24 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
 
 
     @Override
-    public void onDmsAdded(String device){
-        Log.d(TAG, "dms add,device = " + device);
+    public void onDmsAdded(PltDeviceData pltDeviceData){
+        Log.d(TAG, "dms add, pltDeviceData:" + pltDeviceData);
+        DmsList.add(pltDeviceData);
+        mDeviceStatusRegistrants.notifyRegistrants();
     }
 
     @Override
-    public void onDmrAdded(String device){
-        Log.d(TAG, "dmr add,device = " + device);
+    public void onDmrAdded(PltDeviceData pltDeviceData){
+        Log.d(TAG, "dmr add, pltDeviceData:" + pltDeviceData);
+        DmrList.add(pltDeviceData);
+    }
+
+
+    public void registerForDeviceStatusChange(Handler h, int what, Object obj) {
+        Log.d(TAG, "registerForDeviceStatusChange, h = " + h);
+        Registrant r = new Registrant(h, what, obj);
+        Log.d(TAG, "registerForDeviceStatusChange, what = " + what);
+        mDeviceStatusRegistrants.add(r);
     }
 
 }

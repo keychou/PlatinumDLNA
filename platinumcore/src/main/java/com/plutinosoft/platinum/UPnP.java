@@ -3,21 +3,18 @@ package com.plutinosoft.platinum;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class UPnP {
     public static final String TAG = "PlatinumDLNA";
     public static final String VERSION_OF_PLATITUMDLNA = "1.0.2";
 
-    ArrayList<String> DmsList = new ArrayList();
-    ArrayList<String> DmrList = new ArrayList();
-
-
     public interface DeviceStatusChangeListener{
-        public void onDmsAdded(String device);
-        public void onDmrAdded(String device);
+        public void onDmsAdded(PltDeviceData pltDeviceData);
+        public void onDmrAdded(PltDeviceData pltDeviceData);
     }
-
 
     private DeviceStatusChangeListener mListener;
 
@@ -45,14 +42,6 @@ public class UPnP {
         return _setActiveDmr(device);
     }
 
-    public ArrayList<String> getDmsList() {
-        return DmsList;
-    }
-
-    public ArrayList<String> getDmrList() {
-        return DmrList;
-    }
-
     public boolean checkVersion(String[] version) {
         String version_of_sdk = _checkVersion();
         version[0] = version_of_sdk;
@@ -63,16 +52,17 @@ public class UPnP {
         return false;
     }
 
-    public void onDmsAdded(String device){
-        Log.d(TAG, "dms added,device = " + device);
-        mListener.onDmsAdded(device);
-        //DmsList.add(device);
+    public void onDmsAdded(String uuid, String friendName, String deviceType){
+
+        Log.d(TAG, "dms added,uuid = " + uuid + ", friendName = " + friendName + ", deviceType" + deviceType);
+        PltDeviceData pltDeviceData = new PltDeviceData(uuid,friendName,deviceType);
+        mListener.onDmsAdded(pltDeviceData);
     }
 
-    public void onDmrAdded(String device){
-        Log.d(TAG, "dmr added,device = " + device);
-        //DmrList.add(device);
-        mListener.onDmrAdded(device);
+    public void onDmrAdded(String uuid, String friendName, String deviceType){
+        Log.d(TAG, "dmr added,uuid = " + uuid + ", friendName = " + friendName + ", deviceType" + deviceType);
+        PltDeviceData pltDeviceData = new PltDeviceData(uuid,friendName,deviceType);
+        mListener.onDmrAdded(pltDeviceData);
 
     }
 
