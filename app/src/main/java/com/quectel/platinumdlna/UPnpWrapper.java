@@ -70,6 +70,32 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
         DmrList.add(pltDeviceData);
     }
 
+    @Override
+    public void onDmsRemoved(PltDeviceData pltDeviceData){
+        Log.d(TAG, "dms removed, pltDeviceData:" + pltDeviceData);
+        for (int i = 0; i < DmsList.size(); i++){
+            Log.d(TAG, "DmsList.get(i).uuid = " + DmsList.get(i).uuid);
+            Log.d(TAG, "pltDeviceData.uuid = " + pltDeviceData.uuid);
+
+            if ((DmsList.get(i).uuid).equals(pltDeviceData.uuid)){
+                Log.d(TAG, "DmsList.get(" + i + ") = " + DmsList.get(i));
+                DmsList.remove(i);
+            }
+        }
+        mDeviceStatusRegistrants.notifyRegistrants();
+    }
+
+    @Override
+    public void onDmrRemoved(PltDeviceData pltDeviceData){
+        Log.d(TAG, "dmr removed, pltDeviceData:" + pltDeviceData);
+        for (int i = 0; i < DmrList.size(); i++){
+            if (DmrList.get(i).uuid == pltDeviceData.uuid){
+                DmrList.remove(i);
+            }
+        }
+        mDeviceStatusRegistrants.notifyRegistrants();
+    }
+
 
     public void registerForDeviceStatusChange(Handler h, int what, Object obj) {
         Log.d(TAG, "registerForDeviceStatusChange, h = " + h);

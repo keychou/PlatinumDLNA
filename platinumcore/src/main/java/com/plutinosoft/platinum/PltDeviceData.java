@@ -6,7 +6,6 @@ package com.plutinosoft.platinum;
 
 public class PltDeviceData {
 
-
     public PltDeviceData(String uuid,String friendlyName, String deviceType){
         this.uuid = uuid;
         this.friendlyName = friendlyName;

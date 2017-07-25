@@ -15,28 +15,22 @@ public class RegistrantList
     public static final String TAG = "PlatinumDLNA.RL";
     ArrayList   registrants = new ArrayList();      // of Registrant
 
-    public synchronized void
-    add(Handler h, int what, Object obj)
-    {
+    public synchronized void add(Handler h, int what, Object obj){
         add(new Registrant(h, what, obj));
     }
 
-    public synchronized void
-    addUnique(Handler h, int what, Object obj)
-    {
+    public synchronized void addUnique(Handler h, int what, Object obj) {
         // if the handler is already in the registrant list, remove it
         remove(h);
         add(new Registrant(h, what, obj));
     }
 
     public synchronized void add(Registrant r){
-        //removeCleared();
+        removeCleared();
         registrants.add(r);
     }
 
-    public synchronized void
-    removeCleared()
-    {
+    public synchronized void removeCleared(){
         for (int i = registrants.size() - 1; i >= 0 ; i--) {
             Registrant  r = (Registrant) registrants.get(i);
 
@@ -46,21 +40,15 @@ public class RegistrantList
         }
     }
 
-    public synchronized int
-    size()
-    {
+    public synchronized int size(){
         return registrants.size();
     }
 
-    public synchronized Object
-    get(int index)
-    {
+    public synchronized Object get(int index){
         return registrants.get(index);
     }
 
-    private synchronized void
-    internalNotifyRegistrants (Object result, Throwable exception)
-    {
+    private synchronized void internalNotifyRegistrants (Object result, Throwable exception){
         Log.d(TAG, "internalNotifyRegistrants, registrants.size() = " + registrants.size());
         for (int i = 0, s = registrants.size(); i < s ; i++) {
             Registrant  r = (Registrant) registrants.get(i);
@@ -68,28 +56,20 @@ public class RegistrantList
         }
     }
 
-    public /*synchronized*/ void
-    notifyRegistrants()
-    {
+    public /*synchronized*/ void notifyRegistrants(){
         Log.d(TAG, "notifyRegistrants");
         internalNotifyRegistrants(null, null);
     }
 
-    public /*synchronized*/ void
-    notifyException(Throwable exception)
-    {
+    public /*synchronized*/ void notifyException(Throwable exception){
         internalNotifyRegistrants (null, exception);
     }
 
-    public /*synchronized*/ void
-    notifyResult(Object result)
-    {
+    public /*synchronized*/ void notifyResult(Object result){
         internalNotifyRegistrants (result, null);
     }
 
-    public synchronized void
-    remove(Handler h)
-    {
+    public synchronized void remove(Handler h){
         for (int i = 0, s = registrants.size() ; i < s ; i++) {
             Registrant  r = (Registrant) registrants.get(i);
             Handler     rh;

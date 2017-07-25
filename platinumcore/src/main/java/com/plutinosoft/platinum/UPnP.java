@@ -13,7 +13,9 @@ public class UPnP {
 
     public interface DeviceStatusChangeListener{
         public void onDmsAdded(PltDeviceData pltDeviceData);
+        public void onDmsRemoved(PltDeviceData pltDeviceData);
         public void onDmrAdded(PltDeviceData pltDeviceData);
+        public void onDmrRemoved(PltDeviceData pltDeviceData);
     }
 
     private DeviceStatusChangeListener mListener;
@@ -59,11 +61,24 @@ public class UPnP {
         mListener.onDmsAdded(pltDeviceData);
     }
 
+    public void onDmsRemoved(String uuid, String friendName, String deviceType){
+
+        Log.d(TAG, "dms removed,uuid = " + uuid + ", friendName = " + friendName + ", deviceType" + deviceType);
+        PltDeviceData pltDeviceData = new PltDeviceData(uuid,friendName,deviceType);
+        mListener.onDmsRemoved(pltDeviceData);
+    }
+
     public void onDmrAdded(String uuid, String friendName, String deviceType){
         Log.d(TAG, "dmr added,uuid = " + uuid + ", friendName = " + friendName + ", deviceType" + deviceType);
         PltDeviceData pltDeviceData = new PltDeviceData(uuid,friendName,deviceType);
         mListener.onDmrAdded(pltDeviceData);
+    }
 
+    public void onDmrRemoved(String uuid, String friendName, String deviceType){
+
+        Log.d(TAG, "dmr removed,uuid = " + uuid + ", friendName = " + friendName + ", deviceType" + deviceType);
+        PltDeviceData pltDeviceData = new PltDeviceData(uuid,friendName,deviceType);
+        mListener.onDmsRemoved(pltDeviceData);
     }
 
     // C glue

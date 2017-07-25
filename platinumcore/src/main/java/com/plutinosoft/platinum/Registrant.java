@@ -18,7 +18,7 @@ public class Registrant
     public static final String TAG = "PlatinumDLNA.R";
 
     public Registrant(Handler h, int what, Object obj){
-        refH = h;
+        refH = new WeakReference(h);
         Log.d(TAG, "refH = " + refH);
         this.what = what;
         userObj = obj;
@@ -37,14 +37,12 @@ public class Registrant
         internalNotifyRegistrant (result, null);
     }
 
-    public void notifyException(Throwable exception)
-    {
+    public void notifyException(Throwable exception){
         internalNotifyRegistrant (null, exception);
     }
 
 
-    /*package*/ void internalNotifyRegistrant (Object result, Throwable exception)
-    {
+    /*package*/ void internalNotifyRegistrant (Object result, Throwable exception){
         Handler h = getHandler();
 
         Log.d(TAG, "h = " + h);
@@ -86,10 +84,10 @@ public class Registrant
         if (refH == null)
             return null;
 
-        return refH;
+        return (Handler) refH.get();
     }
 
-    Handler   refH;
+    WeakReference   refH;
     int             what;
     Object          userObj;
 }

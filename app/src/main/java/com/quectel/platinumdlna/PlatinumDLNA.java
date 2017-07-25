@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -38,6 +39,8 @@ public class PlatinumDLNA extends AppCompatActivity{
     ArrayList<PltDeviceData> dmrlist;
     String[] version = new String[2];
 
+    MyHandler myHandler = new MyHandler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +54,10 @@ public class PlatinumDLNA extends AppCompatActivity{
 
         mUPnpWrapper = new UPnpWrapper();
 
-        mUPnpWrapper.registerForDeviceStatusChange(new MyHandler(), EVENT_DMS_ADDED, null);
-        mUPnpWrapper.registerForDeviceStatusChange(new MyHandler(), EVENT_DMR_ADDED, null);
+        mUPnpWrapper.registerForDeviceStatusChange(myHandler, EVENT_DMS_ADDED, null);
+        mUPnpWrapper.registerForDeviceStatusChange(myHandler, EVENT_DMS_REMOVED, null);
+        mUPnpWrapper.registerForDeviceStatusChange(myHandler, EVENT_DMR_ADDED, null);
+        mUPnpWrapper.registerForDeviceStatusChange(myHandler, EVENT_DMR_REMOVED, null);
 
         //checkVersion must be called before we start upnp.
         if (mUPnpWrapper.checkVersion(version)){
@@ -85,6 +90,17 @@ public class PlatinumDLNA extends AppCompatActivity{
                 showDevice(dmrlist);
             }
         });
+
+
+        lvShowList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "position = " + position + ", id = " + id);
+                PltDeviceData pltDeviceData= dmslist.get(position);
+                Log.d(TAG, "pltDeviceData = " + pltDeviceData);
+
+            }
+        });
     }
 
     void showDevice(ArrayList<PltDeviceData> list){
@@ -97,8 +113,6 @@ public class PlatinumDLNA extends AppCompatActivity{
             map.put("type", list.get(i).deviceType);
             status.add(map);
         }
-
-       // ArrayAdapter<PltDeviceData> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_2, list);
 
         SimpleAdapter simpleAdapter = new SimpleAdapter(
                 this,
@@ -115,7 +129,6 @@ public class PlatinumDLNA extends AppCompatActivity{
             Log.d(TAG, "msg.what = " + msg.what);
             switch (msg.what) {
 
-
                 case EVENT_DMS_ADDED: {
                     dmslist = mUPnpWrapper.getDmsList();
                     showDevice(dmslist);
@@ -123,7 +136,8 @@ public class PlatinumDLNA extends AppCompatActivity{
                 break;
 
                 case EVENT_DMS_REMOVED: {
-
+                    dmslist = mUPnpWrapper.getDmsList();
+                    showDevice(dmslist);
                 }
                 break;
 
