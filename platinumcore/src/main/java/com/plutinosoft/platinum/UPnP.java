@@ -36,12 +36,20 @@ public class UPnP {
         return _stop(cSelf);
     }
 
-    public int setActiveDms(String device) {
-        return _setActiveDms(device);
+    public int setActiveDms(String uuid) {
+        return _setActiveDms(uuid);
     }
 
-    public int setActiveDmr(String device) {
-        return _setActiveDmr(device);
+    public int setActiveDmr(String uuid) {
+        return _setActiveDmr(uuid);
+    }
+
+    public String getActiveDms() {
+        return _getActiveDms();
+    }
+
+    public String getActiveDmr() {
+        return _getActiveDmr();
     }
 
     public boolean checkVersion(String[] version) {
@@ -85,8 +93,10 @@ public class UPnP {
     private native long _init();
     private native int _start(long self);
     private native int _stop(long self);
-    private native int _setActiveDms(String device);
-    private native int _setActiveDmr(String device);
+    private native int _setActiveDms(String uuid);
+    private native int _setActiveDmr(String uuid);
+    private native String _getActiveDms();
+    private native String _getActiveDmr();
 	private native String _checkVersion();
 	
     private final long cSelf;

@@ -99,6 +99,10 @@ public class PlatinumDLNA extends AppCompatActivity{
                 PltDeviceData pltDeviceData= dmslist.get(position);
                 Log.d(TAG, "pltDeviceData = " + pltDeviceData);
 
+                mUPnpWrapper.setActiveDms(pltDeviceData.uuid);
+
+                Log.d(TAG, "mUPnpWrapper.getActiveDms() = " + mUPnpWrapper.getActiveDms());
+
             }
         });
     }
