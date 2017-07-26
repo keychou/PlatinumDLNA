@@ -1,5 +1,7 @@
 package com.quectel.platinumdlna;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -12,11 +14,13 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.plutinosoft.platinum.MediaObject;
 import com.plutinosoft.platinum.PltDeviceData;
 import com.plutinosoft.platinum.UPnP;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +51,10 @@ public class PlatinumDLNA extends AppCompatActivity{
     String[] version = new String[2];
 
     int listviewtype = LISTVIEW_TYPE_DEV;
+
+    public String mActiveMediaServer;
+    public String mActiveMediaRender;
+
 
     MyHandler myHandler = new MyHandler();
 
@@ -136,7 +144,7 @@ public class PlatinumDLNA extends AppCompatActivity{
                     listviewtype = LISTVIEW_TYPE_ITEM;
                 }else if (listviewtype == LISTVIEW_TYPE_ITEM){
                     Log.d(TAG, "show mr");
-
+                    ChooseMediaRender();
                 }
             }
         });
@@ -183,6 +191,61 @@ public class PlatinumDLNA extends AppCompatActivity{
 
         lvShowList.setAdapter(simpleAdapter);
     }
+
+    String[] items;
+    int yourChoice;
+
+    public void ChooseMediaRender(){
+
+        ArrayList<String> devUuids =new ArrayList<String>();
+
+        dmrlist = mUPnpWrapper.getDmrList();
+        for (int i=0; i < dmrlist.size(); i++){
+
+            PltDeviceData pltDeviceData= dmrlist.get(i);
+            Log.d(TAG, "dmr = " + pltDeviceData);
+            devUuids.add(pltDeviceData.friendlyName);
+        }
+
+        items = devUuids.toArray(new String[devUuids.size()]);
+
+        showSingleChoiceDialog(items);
+
+
+    }
+
+    private void showSingleChoiceDialog(String[] devUuids){
+
+        AlertDialog.Builder singleChoiceDialog =
+                new AlertDialog.Builder(PlatinumDLNA.this);
+        singleChoiceDialog.setTitle("Choose a Render");
+        // 第二个参数是默认选项，此处设置为0
+
+        singleChoiceDialog.setSingleChoiceItems(items, 0,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mActiveMediaRender = dmrlist.get(which).uuid;
+                        mUPnpWrapper.setActiveDmr(mActiveMediaRender);
+                        Log.d(TAG, "get mActiveMediaRender = " + mUPnpWrapper.getActiveDmr());
+                    }
+                });
+
+        singleChoiceDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (yourChoice != -1) {
+                            Toast.makeText(PlatinumDLNA.this,
+                                    "你选择了" + mActiveMediaRender,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+        singleChoiceDialog.show();
+    }
+
+
 
     public class MyHandler extends Handler{
         public void handleMessage (Message msg) {
