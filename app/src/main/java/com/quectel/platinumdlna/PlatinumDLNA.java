@@ -13,12 +13,15 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.plutinosoft.platinum.MediaObject;
 import com.plutinosoft.platinum.PltDeviceData;
 import com.plutinosoft.platinum.UPnP;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class PlatinumDLNA extends AppCompatActivity{
 
@@ -26,10 +29,14 @@ public class PlatinumDLNA extends AppCompatActivity{
     public static final String TAG = "PlatinumDLNA";
 
     /* Event Constants */
-    protected static final int EVENT_DMS_ADDED            = 1;
-    protected static final int EVENT_DMS_REMOVED                         = 2;
-    protected static final int EVENT_DMR_ADDED          = 3;
-    protected static final int EVENT_DMR_REMOVED                   = 4;
+    protected static final int EVENT_DMS_ADDED   = 1;
+    protected static final int EVENT_DMS_REMOVED = 2;
+    protected static final int EVENT_DMR_ADDED   = 3;
+    protected static final int EVENT_DMR_REMOVED = 4;
+
+    protected static final int LISTVIEW_TYPE_DEV = 0X10;
+    protected static final int LISTVIEW_TYPE_DIR = LISTVIEW_TYPE_DEV + 1;
+    protected static final int LISTVIEW_TYPE_ITEM = LISTVIEW_TYPE_DEV + 2;
 
 
     UPnpWrapper mUPnpWrapper;
@@ -38,6 +45,8 @@ public class PlatinumDLNA extends AppCompatActivity{
     ArrayList<PltDeviceData> dmslist;
     ArrayList<PltDeviceData> dmrlist;
     String[] version = new String[2];
+
+    int listviewtype = LISTVIEW_TYPE_DEV;
 
     MyHandler myHandler = new MyHandler();
 
@@ -95,16 +104,40 @@ public class PlatinumDLNA extends AppCompatActivity{
         lvShowList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "position = " + position + ", id = " + id);
-                PltDeviceData pltDeviceData= dmslist.get(position);
-                Log.d(TAG, "pltDeviceData = " + pltDeviceData);
+                if (listviewtype == LISTVIEW_TYPE_DEV){
+                    Log.d(TAG, "show dir");
+                    Log.d(TAG, "position = " + position + ", id = " + id);
+                    PltDeviceData pltDeviceData= dmslist.get(position);
+                    Log.d(TAG, "pltDeviceData = " + pltDeviceData);
 
-                mUPnpWrapper.setActiveDms(pltDeviceData.uuid);
+                    mUPnpWrapper.setActiveDms(pltDeviceData.uuid);
 
-                Log.d(TAG, "mUPnpWrapper.getActiveDms() = " + mUPnpWrapper.getActiveDms());
+                    Log.d(TAG, "mUPnpWrapper.getActiveDms() = " + mUPnpWrapper.getActiveDms());
 
-                mUPnpWrapper.lsFiles();
+                    MediaObject[] mediaObjects = mUPnpWrapper.lsFiles();
 
+                    ArrayList<MediaObject> mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
+
+                    showFiles(mediaObjectArrayList);
+
+                    listviewtype = LISTVIEW_TYPE_DIR;
+                } else if (listviewtype == LISTVIEW_TYPE_DIR){
+                    Log.d(TAG, "show dev");
+                    MediaObject[] mediaObjects = mUPnpWrapper.lsFiles();
+
+                    mUPnpWrapper.changeDirectory(mediaObjects[1].m_ObjectID);
+
+                    mediaObjects = mUPnpWrapper.lsFiles();
+
+                    ArrayList<MediaObject> mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
+
+                    showFiles(mediaObjectArrayList);
+
+                    listviewtype = LISTVIEW_TYPE_ITEM;
+                }else if (listviewtype == LISTVIEW_TYPE_ITEM){
+                    Log.d(TAG, "show mr");
+
+                }
             }
         });
     }
@@ -126,6 +159,27 @@ public class PlatinumDLNA extends AppCompatActivity{
                 R.layout.device_item,
                 new String[]{"friendlyname", "uuid", "type"},
                 new int[]{R.id.status_friendlyname, R.id.status_uuid, R.id.status_type});
+
+        lvShowList.setAdapter(simpleAdapter);
+    }
+
+
+    void showFiles(ArrayList<MediaObject> list){
+        ArrayList<Map<String, String>> status = new ArrayList<Map<String, String>>();
+
+        for (int i = 0; i < list.size(); i++ ){
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put("objectId", list.get(i).m_ObjectID);
+            map.put("title", list.get(i).m_Title);
+            status.add(map);
+        }
+
+        SimpleAdapter simpleAdapter = new SimpleAdapter(
+                this,
+                status,
+                R.layout.file_item,
+                new String[]{"objectId", "title"},
+                new int[]{R.id.object_title, R.id.object_id});
 
         lvShowList.setAdapter(simpleAdapter);
     }

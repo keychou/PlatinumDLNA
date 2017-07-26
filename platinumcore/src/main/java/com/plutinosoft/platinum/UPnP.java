@@ -52,8 +52,20 @@ public class UPnP {
         return _getActiveDmr();
     }
 
-    public String lsFiles() {
+    public MediaObject[] lsFiles() {
+
+        MediaObject[] mediaObjects = _lsFiles();
+        for(int i = 0; i < mediaObjects.length; i++){
+            Log.d(TAG, "mediaObjects["+ i + "] = " + mediaObjects[i]);
+        }
+
+
         return _lsFiles();
+    }
+
+
+    public int changeDirectory(String objectId) {
+        return _changeDirectory(objectId);
     }
 
 
@@ -105,7 +117,8 @@ public class UPnP {
     private native String _getActiveDms();
     private native String _getActiveDmr();
 	private native String _checkVersion();
-    private native String _lsFiles();
+    private native MediaObject[] _lsFiles();
+    private native int _changeDirectory(String objectId);
 	
     private final long cSelf;
 
