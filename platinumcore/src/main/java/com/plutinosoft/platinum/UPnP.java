@@ -52,6 +52,11 @@ public class UPnP {
         return _getActiveDmr();
     }
 
+    public String lsFiles() {
+        return _lsFiles();
+    }
+
+
     public boolean checkVersion(String[] version) {
         String version_of_sdk = _checkVersion();
         version[0] = version_of_sdk;
@@ -89,6 +94,8 @@ public class UPnP {
         mListener.onDmsRemoved(pltDeviceData);
     }
 
+
+
     // C glue
     private native long _init();
     private native int _start(long self);
@@ -98,6 +105,7 @@ public class UPnP {
     private native String _getActiveDms();
     private native String _getActiveDmr();
 	private native String _checkVersion();
+    private native String _lsFiles();
 	
     private final long cSelf;
 

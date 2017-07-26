@@ -103,6 +103,8 @@ public class PlatinumDLNA extends AppCompatActivity{
 
                 Log.d(TAG, "mUPnpWrapper.getActiveDms() = " + mUPnpWrapper.getActiveDms());
 
+                mUPnpWrapper.lsFiles();
+
             }
         });
     }
