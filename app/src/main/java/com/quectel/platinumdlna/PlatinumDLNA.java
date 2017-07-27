@@ -16,6 +16,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.plutinosoft.platinum.FileManager;
 import com.plutinosoft.platinum.MediaObject;
 import com.plutinosoft.platinum.PltDeviceData;
 import com.plutinosoft.platinum.UPnP;
@@ -56,6 +57,7 @@ public class PlatinumDLNA extends AppCompatActivity{
     public String mActiveMediaServer;
     public String mActiveMediaRender;
     public String resId;
+    public FileManager fileManager;
 
 
     MyHandler myHandler = new MyHandler();
@@ -121,25 +123,26 @@ public class PlatinumDLNA extends AppCompatActivity{
                     Log.d(TAG, "pltDeviceData = " + pltDeviceData);
 
                     mUPnpWrapper.setActiveDms(pltDeviceData.uuid);
+                    fileManager = new FileManager(mUPnpWrapper.uPnP, pltDeviceData.uuid);
 
                     Log.d(TAG, "mUPnpWrapper.getActiveDms() = " + mUPnpWrapper.getActiveDms());
 
-                    MediaObject[] mediaObjects = mUPnpWrapper.lsFiles();
-
-                    ArrayList<MediaObject> mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
+                    ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
                     showFiles(mediaObjectArrayList);
 
                     listviewtype = LISTVIEW_TYPE_DIR;
+
                 } else if (listviewtype == LISTVIEW_TYPE_DIR){
                     Log.d(TAG, "show dev");
-                    MediaObject[] mediaObjects = mUPnpWrapper.lsFiles();
 
-                    mUPnpWrapper.changeDirectory(mediaObjects[1].m_ObjectID);
+                    Log.d(TAG, "position = " + position + ", id = " + id);
 
-                    mediaObjects = mUPnpWrapper.lsFiles();
+                    ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    ArrayList<MediaObject> mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
+                    fileManager.setObjectId(mediaObjectArrayList.get(position).m_ObjectID);
+
+                    mediaObjectArrayList = fileManager.listFiles();
 
                     showFiles(mediaObjectArrayList);
 
@@ -149,13 +152,17 @@ public class PlatinumDLNA extends AppCompatActivity{
                     ChooseMediaRender();
 
                     Log.d(TAG, "position = " + position + ", id = " + id);
-                    MediaObject[] mediaObjects = mUPnpWrapper.lsFiles();
+                    ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    resId = mediaObjects[position].m_ObjectID;
+                    resId = mediaObjectArrayList.get(position).m_ObjectID;
+                    Log.d(TAG, "resId = " + resId);
 
                     MediaPlayThread mediaPlayThread = new MediaPlayThread();
                     Log.d(TAG, "main thread id = " + Thread.currentThread().getId());
                     mediaPlayThread.start();
+
+                    listviewtype = LISTVIEW_TYPE_DEV;
+                    showDevice(dmslist);
                 }
             }
         });
@@ -314,8 +321,9 @@ public class PlatinumDLNA extends AppCompatActivity{
             try{
                 synchronized (lock) {
                     lock.wait();
-                    Log.d(TAG, "play resource");
+                    Log.d(TAG, "play resource : " + resId);
                     mUPnpWrapper.play(resId);
+                    Log.d(TAG, "play resource down : " + resId);
 
 
                 }

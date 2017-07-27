@@ -107,7 +107,7 @@ public class UPnP {
 
         Log.d(TAG, "dmr removed,uuid = " + uuid + ", friendName = " + friendName + ", deviceType" + deviceType);
         PltDeviceData pltDeviceData = new PltDeviceData(uuid,friendName,deviceType);
-        mListener.onDmsRemoved(pltDeviceData);
+        mListener.onDmrRemoved(pltDeviceData);
     }
 
 
