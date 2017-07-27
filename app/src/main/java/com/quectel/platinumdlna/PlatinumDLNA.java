@@ -42,6 +42,7 @@ public class PlatinumDLNA extends AppCompatActivity{
     protected static final int LISTVIEW_TYPE_DIR = LISTVIEW_TYPE_DEV + 1;
     protected static final int LISTVIEW_TYPE_ITEM = LISTVIEW_TYPE_DEV + 2;
 
+    public final Object lock = new Object();
 
     UPnpWrapper mUPnpWrapper;
     Button btShowDMS, btShowDMR;
@@ -54,6 +55,7 @@ public class PlatinumDLNA extends AppCompatActivity{
 
     public String mActiveMediaServer;
     public String mActiveMediaRender;
+    public String resId;
 
 
     MyHandler myHandler = new MyHandler();
@@ -145,6 +147,15 @@ public class PlatinumDLNA extends AppCompatActivity{
                 }else if (listviewtype == LISTVIEW_TYPE_ITEM){
                     Log.d(TAG, "show mr");
                     ChooseMediaRender();
+
+                    Log.d(TAG, "position = " + position + ", id = " + id);
+                    MediaObject[] mediaObjects = mUPnpWrapper.lsFiles();
+
+                    resId = mediaObjects[position].m_ObjectID;
+
+                    MediaPlayThread mediaPlayThread = new MediaPlayThread();
+                    Log.d(TAG, "main thread id = " + Thread.currentThread().getId());
+                    mediaPlayThread.start();
                 }
             }
         });
@@ -228,6 +239,18 @@ public class PlatinumDLNA extends AppCompatActivity{
                         mActiveMediaRender = dmrlist.get(which).uuid;
                         mUPnpWrapper.setActiveDmr(mActiveMediaRender);
                         Log.d(TAG, "get mActiveMediaRender = " + mUPnpWrapper.getActiveDmr());
+
+                        if (mActiveMediaRender != null){
+                            try{
+                                synchronized (lock) {
+                                    Log.d(TAG, "MediaRender is ready, start to play");
+                                    lock.notify();
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+
                     }
                 });
 
@@ -243,6 +266,9 @@ public class PlatinumDLNA extends AppCompatActivity{
                     }
                 });
         singleChoiceDialog.show();
+
+        Log.d(TAG, "singleChoiceDialog.show()");
+
     }
 
 
@@ -277,6 +303,27 @@ public class PlatinumDLNA extends AppCompatActivity{
                 default:
                     super.handleMessage(msg);
             }
+        }
+    }
+
+    public class MediaPlayThread extends Thread{
+
+        @Override
+        public void run() {
+            Log.d(TAG, "wait play resource,play thread id = " + Thread.currentThread().getId());
+            try{
+                synchronized (lock) {
+                    lock.wait();
+                    Log.d(TAG, "play resource");
+                    mUPnpWrapper.play(resId);
+
+
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
         }
     }
 }

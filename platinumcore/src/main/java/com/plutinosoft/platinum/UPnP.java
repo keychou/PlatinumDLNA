@@ -68,6 +68,10 @@ public class UPnP {
         return _changeDirectory(objectId);
     }
 
+    public int play(String objectId) {
+        return _play(objectId);
+    }
+
 
     public boolean checkVersion(String[] version) {
         String version_of_sdk = _checkVersion();
@@ -119,6 +123,7 @@ public class UPnP {
 	private native String _checkVersion();
     private native MediaObject[] _lsFiles();
     private native int _changeDirectory(String objectId);
+    private native int _play(String objectId);
 	
     private final long cSelf;
 
