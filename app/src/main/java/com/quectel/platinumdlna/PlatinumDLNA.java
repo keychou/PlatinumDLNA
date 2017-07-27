@@ -97,6 +97,8 @@ public class PlatinumDLNA extends AppCompatActivity{
                 for (int i=0; i < dmslist.size(); i++){
                     Log.d(TAG, "dms = " + dmslist.get(i));
                 }
+
+                listviewtype = LISTVIEW_TYPE_DEV;
                 showDevice(dmslist);
             }
         });
@@ -161,8 +163,6 @@ public class PlatinumDLNA extends AppCompatActivity{
                     Log.d(TAG, "main thread id = " + Thread.currentThread().getId());
                     mediaPlayThread.start();
 
-                    listviewtype = LISTVIEW_TYPE_DEV;
-                    showDevice(dmslist);
                 }
             }
         });

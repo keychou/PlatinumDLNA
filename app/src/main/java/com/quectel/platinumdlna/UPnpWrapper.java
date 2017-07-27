@@ -89,7 +89,7 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
     public void onDmrRemoved(PltDeviceData pltDeviceData){
         Log.d(TAG, "dmr removed, pltDeviceData:" + pltDeviceData);
         for (int i = 0; i < DmrList.size(); i++){
-            if (DmrList.get(i).uuid == pltDeviceData.uuid){
+            if ((DmrList.get(i).uuid).equals(pltDeviceData.uuid)){
                 DmrList.remove(i);
             }
         }
