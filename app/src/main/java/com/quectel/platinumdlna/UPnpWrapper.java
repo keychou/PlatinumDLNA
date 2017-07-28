@@ -21,8 +21,19 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
 
     UPnP uPnP;
 
+    public static UPnpWrapper mUPnpWrapper;
+
     ArrayList<PltDeviceData> DmsList = new ArrayList<PltDeviceData>();
     ArrayList<PltDeviceData> DmrList = new ArrayList<PltDeviceData>();
+
+    public static UPnpWrapper getInstance() {
+
+        if (mUPnpWrapper == null){
+            mUPnpWrapper = new UPnpWrapper();
+        }
+        return mUPnpWrapper;
+    }
+
 
     protected RegistrantList mDeviceStatusRegistrants = new RegistrantList();
 

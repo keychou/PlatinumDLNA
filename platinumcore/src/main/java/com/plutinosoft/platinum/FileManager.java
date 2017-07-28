@@ -19,6 +19,9 @@ public class FileManager {
     public static final int FILE_TYPE_MUSIC = FILE_TYPE_DIR + 3;
     public static final int FILE_TYPE_PICTURE = FILE_TYPE_DIR + 4;
 
+    public static final String FILE_OBJECT_UUID= "content_uuid";
+    public static final String FILE_OBJECT_TYPE= "content_type";
+
     public FileManager(UPnP uPnP, String uuid){
         mUPnP = uPnP;
         mActiveMediaServer = uuid;
@@ -36,8 +39,10 @@ public class FileManager {
     public ArrayList<MediaObject> listFiles(){
         MediaObject[] mediaObjects = mUPnP.lsFiles();
 
+
         ArrayList<MediaObject> mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
         return mediaObjectArrayList;
+
     }
 
 

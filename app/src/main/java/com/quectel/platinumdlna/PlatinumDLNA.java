@@ -2,6 +2,7 @@ package com.quectel.platinumdlna;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -46,7 +48,7 @@ public class PlatinumDLNA extends AppCompatActivity{
     public final Object lock = new Object();
 
     UPnpWrapper mUPnpWrapper;
-    Button btShowDMS, btShowDMR;
+    ImageButton ibShowDMR;
     ListView lvShowList;
     ArrayList<PltDeviceData> dmslist;
     ArrayList<PltDeviceData> dmrlist;
@@ -70,8 +72,7 @@ public class PlatinumDLNA extends AppCompatActivity{
 
 
         lvShowList = (ListView) findViewById(R.id.listdevce);
-        btShowDMS = (Button) findViewById(R.id.show_dms);
-        btShowDMR = (Button) findViewById(R.id.show_dmr);
+        ibShowDMR = (ImageButton) findViewById(R.id.show_dmr);
 
         mUPnpWrapper = new UPnpWrapper();
 
@@ -90,27 +91,11 @@ public class PlatinumDLNA extends AppCompatActivity{
 
         Log.d(TAG, "mUPnpWrapper.start() = " + mUPnpWrapper.start());
 
-        btShowDMS.setOnClickListener(new View.OnClickListener() {
+
+        ibShowDMR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dmslist = mUPnpWrapper.getDmsList();
-                for (int i=0; i < dmslist.size(); i++){
-                    Log.d(TAG, "dms = " + dmslist.get(i));
-                }
-
-                listviewtype = LISTVIEW_TYPE_DEV;
-                showDevice(dmslist);
-            }
-        });
-
-        btShowDMR.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dmrlist = mUPnpWrapper.getDmrList();
-                for (int i=0; i < dmrlist.size(); i++){
-                    Log.d(TAG, "dmr = " + dmrlist.get(i));
-                }
-                showDevice(dmrlist);
+                ChooseMediaRender();
             }
         });
 
@@ -151,7 +136,6 @@ public class PlatinumDLNA extends AppCompatActivity{
                     listviewtype = LISTVIEW_TYPE_ITEM;
                 }else if (listviewtype == LISTVIEW_TYPE_ITEM){
                     Log.d(TAG, "show mr");
-                    ChooseMediaRender();
 
                     Log.d(TAG, "position = " + position + ", id = " + id);
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
@@ -159,9 +143,11 @@ public class PlatinumDLNA extends AppCompatActivity{
                     resId = mediaObjectArrayList.get(position).m_ObjectID;
                     Log.d(TAG, "resId = " + resId);
 
-                    MediaPlayThread mediaPlayThread = new MediaPlayThread();
-                    Log.d(TAG, "main thread id = " + Thread.currentThread().getId());
-                    mediaPlayThread.start();
+                    Intent intent = new Intent(PlatinumDLNA.this, UpnpController.class);
+
+                    intent.putExtra(FileManager.FILE_OBJECT_UUID, resId);
+
+                    startActivity(intent);
 
                 }
             }
@@ -192,20 +178,31 @@ public class PlatinumDLNA extends AppCompatActivity{
 
     void showFiles(ArrayList<MediaObject> list){
         ArrayList<Map<String, String>> status = new ArrayList<Map<String, String>>();
+        SimpleAdapter simpleAdapter;
 
-        for (int i = 0; i < list.size(); i++ ){
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("objectId", list.get(i).m_ObjectID);
+                map.put("title", list.get(i).m_Title);
+                status.add(map);
+            }
+        }else{
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put("objectId", list.get(i).m_ObjectID);
-            map.put("title", list.get(i).m_Title);
+            map.put("objectId", "empty directory");
+            map.put("title", "");
             status.add(map);
         }
 
-        SimpleAdapter simpleAdapter = new SimpleAdapter(
+        simpleAdapter = new SimpleAdapter(
                 this,
                 status,
                 R.layout.file_item,
                 new String[]{"objectId", "title"},
                 new int[]{R.id.object_title, R.id.object_id});
+
+
+
 
         lvShowList.setAdapter(simpleAdapter);
     }
@@ -313,25 +310,5 @@ public class PlatinumDLNA extends AppCompatActivity{
         }
     }
 
-    public class MediaPlayThread extends Thread{
 
-        @Override
-        public void run() {
-            Log.d(TAG, "wait play resource,play thread id = " + Thread.currentThread().getId());
-            try{
-                synchronized (lock) {
-                    lock.wait();
-                    Log.d(TAG, "play resource : " + resId);
-                    mUPnpWrapper.play(resId);
-                    Log.d(TAG, "play resource down : " + resId);
-
-
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-
-        }
-    }
 }

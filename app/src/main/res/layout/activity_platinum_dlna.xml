@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:weightSum="1">
 
-
-
     <LinearLayout
-        android:id="@+id/media_type_selector_container"
-        android:layout_width="fill_parent"
-        android:layout_height="71dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:background="@color/lightslategrey"
+        android:weightSum="1">
 
-        <Button
-            android:text="DMS"
-            android:layout_width="192dp"
-            android:layout_height="78dp"
-            android:id="@+id/show_dms" />
+        <TextView
+            android:text="DMS服务器列表"
+            android:layout_width="102dp"
+            android:layout_height="match_parent"
+            android:id="@+id/dmslist"
+            android:layout_weight="0.98"
+            android:textSize="18sp"
+            android:textAlignment="textStart"
+            android:gravity="center" />
 
-        <Button
-            android:text="DMR"
-            android:layout_width="match_parent"
-            android:layout_height="78dp"
+        <ImageButton
+            android:layout_width="53dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:background="@color/lightslategrey"
+            app:srcCompat="@mipmap/dmr"
             android:id="@+id/show_dmr" />
+
     </LinearLayout>
 
     <ListView
