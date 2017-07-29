@@ -58,9 +58,6 @@ public class PlatinumDLNA extends AppCompatActivity{
     public String resId;
     public FileManager fileManager;
     MediaObject currentObject = null;
-    ArrayList<MediaObject> mediaObjectArrayList;
-
-
 
     MyHandler myHandler = new MyHandler();
 
@@ -98,6 +95,8 @@ public class PlatinumDLNA extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 ChooseMediaRender();
+
+                Log.d(TAG, "listviewtype1 = " + listviewtype);
             }
         });
 
@@ -111,6 +110,9 @@ public class PlatinumDLNA extends AppCompatActivity{
         lvShowList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Log.d(TAG, "listviewtype2 = " + listviewtype);
+
                 if (listviewtype == LISTVIEW_TYPE_DEV){
                     PltDeviceData pltDeviceData= dmslist.get(position);
                     Log.d(TAG, "show contents of " + pltDeviceData.friendlyName);
@@ -152,12 +154,9 @@ public class PlatinumDLNA extends AppCompatActivity{
 
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    currentObject = mediaObjectArrayList.get(position);
-
-                    resId = currentObject.m_ObjectID;
+                    resId = mediaObjectArrayList.get(position).m_ObjectID;
 
                     Log.d(TAG, "play media file " + resId);
-
 
                     Intent intent = new Intent(PlatinumDLNA.this, UpnpController.class);
 
@@ -195,6 +194,25 @@ public class PlatinumDLNA extends AppCompatActivity{
         });
     }
 
+
+    public class MediaPlayThread extends Thread{
+
+        @Override
+        public void run() {
+            Log.d(TAG, "wait play resource,play thread id = " + Thread.currentThread().getId());
+            try{
+                Log.d(TAG, "play resource : " + resId);
+                mUPnpWrapper.play(resId);
+                Log.d(TAG, "play resource down : " + resId);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+        }
+    }
+
     void showDevice(ArrayList<PltDeviceData> list){
         ArrayList<Map<String, String>> status = new ArrayList<Map<String, String>>();
 
@@ -216,6 +234,8 @@ public class PlatinumDLNA extends AppCompatActivity{
         lvShowList.setAdapter(simpleAdapter);
 
         ibBack.setVisibility(View.GONE);
+
+        Log.d(TAG, "listviewtype3 = " + listviewtype);
     }
 
 
@@ -246,6 +266,8 @@ public class PlatinumDLNA extends AppCompatActivity{
 
         lvShowList.setAdapter(simpleAdapter);
         ibBack.setVisibility(View.VISIBLE);
+
+
     }
 
     String[] items;
@@ -284,18 +306,6 @@ public class PlatinumDLNA extends AppCompatActivity{
                         mActiveMediaRender = dmrlist.get(which);
                         mUPnpWrapper.setActiveDmr(mActiveMediaRender.uuid);
                         Log.d(TAG, "get mActiveMediaRender = " + mUPnpWrapper.getActiveDmr());
-
-                        if (mActiveMediaRender != null){
-                            try{
-                                synchronized (lock) {
-                                    Log.d(TAG, "MediaRender is ready, start to play");
-                                    lock.notify();
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-
                     }
                 });
 
@@ -316,6 +326,8 @@ public class PlatinumDLNA extends AppCompatActivity{
 
         Log.d(TAG, "singleChoiceDialog.show()");
 
+        Log.d(TAG, "listviewtype4 = " + listviewtype);
+
     }
 
 
@@ -329,7 +341,9 @@ public class PlatinumDLNA extends AppCompatActivity{
                 case EVENT_DMS_REMOVED:
                 {
                     dmslist = mUPnpWrapper.getDmsList();
-                    showDevice(dmslist);
+                    if (listviewtype == LISTVIEW_TYPE_DEV){
+                        showDevice(dmslist);
+                    }
                 }
                 break;
 

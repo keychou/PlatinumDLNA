@@ -117,10 +117,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/volume2"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
             <com.quectel.platinumdlna.VerticalSeekbar
-                android:id="@+id/sound_controll"
+                android:id="@+id/sound_controller"
                 android:layout_width="15dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal"

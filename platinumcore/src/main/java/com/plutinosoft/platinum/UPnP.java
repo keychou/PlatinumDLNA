@@ -69,12 +69,30 @@ public class UPnP {
     }
 
     public int cdup() {
+        Log.d(TAG, "-----cdup----");
         return _cdup();
     }
 
     public int play(String objectId) {
         return _play(objectId);
     }
+
+    public int seek(String realtime) {
+        return _seek(realtime);
+    }
+
+    public int mediastop() {
+        return _mediastop();
+    }
+
+    public int mute() {
+        return _mute();
+    }
+
+    public int unmute() {
+        return _unmute();
+    }
+
 
 
     public boolean checkVersion(String[] version) {
@@ -129,6 +147,10 @@ public class UPnP {
     private native int _changeDirectory(String objectId);
     private native int _play(String objectId);
     private native int _cdup();
+    private native int _seek(String realtime);
+    private native int _mediastop();
+    private native int _mute();
+    private native int _unmute();
 	
     private final long cSelf;
 
