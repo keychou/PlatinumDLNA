@@ -14,10 +14,24 @@
         android:background="@color/lightslategrey"
         android:weightSum="1">
 
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:srcCompat="?attr/actionModeCloseDrawable"
+            android:scaleType="fitXY"
+            android:background="@color/lightslategrey"
+            android:id="@+id/back"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.09" />
+
         <TextView
             android:text="DMS服务器列表"
             android:layout_width="102dp"
             android:layout_height="match_parent"
+            android:clickable="true"
             android:id="@+id/dmslist"
             android:layout_weight="0.98"
             android:textSize="18sp"
@@ -37,7 +51,7 @@
     <ListView
         android:id="@+id/listdevce"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="408dp"
         android:cacheColorHint="#00000000"
         android:divider="#FF333333"
         android:dividerHeight="0.5dip"/>

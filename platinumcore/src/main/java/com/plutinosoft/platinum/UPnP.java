@@ -68,6 +68,10 @@ public class UPnP {
         return _changeDirectory(objectId);
     }
 
+    public int cdup() {
+        return _cdup();
+    }
+
     public int play(String objectId) {
         return _play(objectId);
     }
@@ -124,6 +128,7 @@ public class UPnP {
     private native MediaObject[] _lsFiles();
     private native int _changeDirectory(String objectId);
     private native int _play(String objectId);
+    private native int _cdup();
 	
     private final long cSelf;
 

@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -21,11 +19,8 @@ import android.widget.Toast;
 import com.plutinosoft.platinum.FileManager;
 import com.plutinosoft.platinum.MediaObject;
 import com.plutinosoft.platinum.PltDeviceData;
-import com.plutinosoft.platinum.UPnP;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,17 +44,22 @@ public class PlatinumDLNA extends AppCompatActivity{
 
     UPnpWrapper mUPnpWrapper;
     ImageButton ibShowDMR;
+    ImageButton ibBack;
     ListView lvShowList;
+    TextView tvTitle;
     ArrayList<PltDeviceData> dmslist;
     ArrayList<PltDeviceData> dmrlist;
     String[] version = new String[2];
 
     int listviewtype = LISTVIEW_TYPE_DEV;
 
-    public String mActiveMediaServer;
-    public String mActiveMediaRender;
+    public PltDeviceData mActiveMediaServer;
+    public PltDeviceData mActiveMediaRender;
     public String resId;
     public FileManager fileManager;
+    MediaObject currentObject = null;
+    ArrayList<MediaObject> mediaObjectArrayList;
+
 
 
     MyHandler myHandler = new MyHandler();
@@ -73,6 +73,8 @@ public class PlatinumDLNA extends AppCompatActivity{
 
         lvShowList = (ListView) findViewById(R.id.listdevce);
         ibShowDMR = (ImageButton) findViewById(R.id.show_dmr);
+        ibBack = (ImageButton) findViewById(R.id.back);
+        tvTitle = (TextView) findViewById(R.id.dmslist);
 
         mUPnpWrapper = new UPnpWrapper();
 
@@ -99,15 +101,19 @@ public class PlatinumDLNA extends AppCompatActivity{
             }
         });
 
+        tvTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "text view clicked");
+            }
+        });
 
         lvShowList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (listviewtype == LISTVIEW_TYPE_DEV){
-                    Log.d(TAG, "show dir");
-                    Log.d(TAG, "position = " + position + ", id = " + id);
                     PltDeviceData pltDeviceData= dmslist.get(position);
-                    Log.d(TAG, "pltDeviceData = " + pltDeviceData);
+                    Log.d(TAG, "show contents of " + pltDeviceData.friendlyName);
 
                     mUPnpWrapper.setActiveDms(pltDeviceData.uuid);
                     fileManager = new FileManager(mUPnpWrapper.uPnP, pltDeviceData.uuid);
@@ -118,37 +124,72 @@ public class PlatinumDLNA extends AppCompatActivity{
 
                     showFiles(mediaObjectArrayList);
 
+                    mActiveMediaServer = pltDeviceData;
+
+                    tvTitle.setText(pltDeviceData.friendlyName);
+
                     listviewtype = LISTVIEW_TYPE_DIR;
 
-                } else if (listviewtype == LISTVIEW_TYPE_DIR){
-                    Log.d(TAG, "show dev");
-
-                    Log.d(TAG, "position = " + position + ", id = " + id);
+                } else if (listviewtype == LISTVIEW_TYPE_DIR) {
 
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    fileManager.setObjectId(mediaObjectArrayList.get(position).m_ObjectID);
+                    currentObject = mediaObjectArrayList.get(position);
+
+                    Log.d(TAG, "show items under " + currentObject.m_ObjectID);
+
+                    tvTitle.setText(currentObject.m_ObjectID);
+
+                    fileManager.setObjectId(currentObject.m_ObjectID);
 
                     mediaObjectArrayList = fileManager.listFiles();
 
                     showFiles(mediaObjectArrayList);
 
                     listviewtype = LISTVIEW_TYPE_ITEM;
-                }else if (listviewtype == LISTVIEW_TYPE_ITEM){
-                    Log.d(TAG, "show mr");
 
-                    Log.d(TAG, "position = " + position + ", id = " + id);
+                } else if (listviewtype == LISTVIEW_TYPE_ITEM){
+
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    resId = mediaObjectArrayList.get(position).m_ObjectID;
-                    Log.d(TAG, "resId = " + resId);
+                    currentObject = mediaObjectArrayList.get(position);
+
+                    resId = currentObject.m_ObjectID;
+
+                    Log.d(TAG, "play media file " + resId);
+
 
                     Intent intent = new Intent(PlatinumDLNA.this, UpnpController.class);
 
                     intent.putExtra(FileManager.FILE_OBJECT_UUID, resId);
 
                     startActivity(intent);
+                }
+            }
+        });
 
+
+        ibBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listviewtype == LISTVIEW_TYPE_DIR){
+                    Log.d(TAG, "back to dms list");
+
+                    dmslist = mUPnpWrapper.getDmsList();
+                    showDevice(dmslist);
+                    tvTitle.setText("DMS服务器列表");
+
+                    currentObject = null;
+                    listviewtype = LISTVIEW_TYPE_DEV;
+
+                } else if (listviewtype == LISTVIEW_TYPE_ITEM){
+                    Log.d(TAG, "back to dir");
+                    mUPnpWrapper.cdup();
+                    ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
+                    showFiles(mediaObjectArrayList);
+
+                    tvTitle.setText(mActiveMediaServer.friendlyName);
+                    listviewtype = LISTVIEW_TYPE_DIR;
                 }
             }
         });
@@ -173,6 +214,8 @@ public class PlatinumDLNA extends AppCompatActivity{
                 new int[]{R.id.status_friendlyname, R.id.status_uuid, R.id.status_type});
 
         lvShowList.setAdapter(simpleAdapter);
+
+        ibBack.setVisibility(View.GONE);
     }
 
 
@@ -201,10 +244,8 @@ public class PlatinumDLNA extends AppCompatActivity{
                 new String[]{"objectId", "title"},
                 new int[]{R.id.object_title, R.id.object_id});
 
-
-
-
         lvShowList.setAdapter(simpleAdapter);
+        ibBack.setVisibility(View.VISIBLE);
     }
 
     String[] items;
@@ -240,8 +281,8 @@ public class PlatinumDLNA extends AppCompatActivity{
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mActiveMediaRender = dmrlist.get(which).uuid;
-                        mUPnpWrapper.setActiveDmr(mActiveMediaRender);
+                        mActiveMediaRender = dmrlist.get(which);
+                        mUPnpWrapper.setActiveDmr(mActiveMediaRender.uuid);
                         Log.d(TAG, "get mActiveMediaRender = " + mUPnpWrapper.getActiveDmr());
 
                         if (mActiveMediaRender != null){
@@ -262,10 +303,12 @@ public class PlatinumDLNA extends AppCompatActivity{
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (yourChoice != -1) {
-                            Toast.makeText(PlatinumDLNA.this,
-                                    "你选择了" + mActiveMediaRender,
-                                    Toast.LENGTH_SHORT).show();
+                        if (mActiveMediaRender != null){
+                            if (yourChoice != -1) {
+                                Toast.makeText(PlatinumDLNA.this,
+                                        "你选择了" + mActiveMediaRender.uuid,
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
@@ -282,25 +325,18 @@ public class PlatinumDLNA extends AppCompatActivity{
             Log.d(TAG, "msg.what = " + msg.what);
             switch (msg.what) {
 
-                case EVENT_DMS_ADDED: {
+                case EVENT_DMS_ADDED:
+                case EVENT_DMS_REMOVED:
+                {
                     dmslist = mUPnpWrapper.getDmsList();
                     showDevice(dmslist);
                 }
                 break;
 
-                case EVENT_DMS_REMOVED: {
-                    dmslist = mUPnpWrapper.getDmsList();
-                    showDevice(dmslist);
-                }
-                break;
-
-                case EVENT_DMR_ADDED: {
+                case EVENT_DMR_ADDED:
+                case EVENT_DMR_REMOVED:
+                {
                     dmrlist = mUPnpWrapper.getDmrList();
-                }
-                break;
-
-                case EVENT_DMR_REMOVED: {
-
                 }
                 break;
 
