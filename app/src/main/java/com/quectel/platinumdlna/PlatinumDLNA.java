@@ -346,5 +346,10 @@ public class PlatinumDLNA extends AppCompatActivity{
         }
     }
 
-
+//    @Override
+//    protected void onResume() {
+//        Log.d(TAG, "--------------------resume--------------------");
+//
+//        super.onResume();
+//    }
 }

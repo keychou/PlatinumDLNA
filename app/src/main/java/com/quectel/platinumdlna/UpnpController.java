@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.plutinosoft.platinum.FileManager;
 
@@ -16,15 +17,22 @@ public class UpnpController extends AppCompatActivity {
     public String mActiveMediaServer;
     public String mActiveMediaRender;
     UPnpWrapper mUPnpWrapper = UPnpWrapper.getInstance();
-    MediaPlayThread mediaPlayThread = new MediaPlayThread();
+
+    TextView tvMediaInfo;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upnp_controller);
 
+
         Intent intent = getIntent();
         resid = intent.getStringExtra(FileManager.FILE_OBJECT_UUID);
+
+        tvMediaInfo = (TextView)findViewById(R.id.media_info);
+        tvMediaInfo.setText(resid);
 
         mActiveMediaServer = mUPnpWrapper.getActiveDms();
         mActiveMediaRender = mUPnpWrapper.getActiveDmr();

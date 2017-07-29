@@ -9,7 +9,7 @@
         android:layout_height="fill_parent">
 
         <TextView
-            android:id="@+id/info_title"
+            android:id="@+id/media_info"
             android:layout_width="fill_parent"
             android:layout_height="60dp"
             android:gravity="center"
@@ -19,14 +19,14 @@
             android:ellipsize="end"
             android:textSize="20dip"
             android:textStyle="bold"
-            android:background="@drawable/bg"/>
+            android:background="@color/lightslategrey"/>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="120dp"
             android:layout_alignParentBottom="true"
             android:orientation="vertical"
-            android:background="@drawable/bg">
+            android:background="@color/lightslategrey">
 
             <SeekBar
                 android:id="@+id/seek"
@@ -38,7 +38,8 @@
                 android:minHeight="10dp"
                 android:progressDrawable="@layout/seekbar_style"
                 android:thumb="@drawable/handle"
-                android:thumbOffset="0dp" />
+                android:thumbOffset="0dp"
+                android:layout_marginTop="10dp" />
 
             <RelativeLayout
                 android:id="@+id/time_pane"
