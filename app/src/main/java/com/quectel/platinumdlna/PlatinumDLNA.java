@@ -161,13 +161,17 @@ public class PlatinumDLNA extends AppCompatActivity{
 
                     resId = mediaObjectArrayList.get(position).m_ObjectID;
 
-                    Log.d(TAG, "play media file " + resId);
+                    if (mActiveMediaRender != null){
+                        Log.d(TAG, "play media file " + resId);
 
-                    Intent intent = new Intent(PlatinumDLNA.this, UpnpController.class);
+                        Intent intent = new Intent(PlatinumDLNA.this, UpnpController.class);
 
-                    intent.putExtra(FileManager.FILE_OBJECT_UUID, resId);
+                        intent.putExtra(FileManager.FILE_OBJECT_UUID, resId);
 
-                    startActivity(intent);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(PlatinumDLNA.this, "请选择远程投影屏幕", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
