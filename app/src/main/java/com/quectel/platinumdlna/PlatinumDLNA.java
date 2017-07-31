@@ -202,25 +202,6 @@ public class PlatinumDLNA extends AppCompatActivity{
         });
     }
 
-
-    public class MediaPlayThread extends Thread{
-
-        @Override
-        public void run() {
-            Log.d(TAG, "wait play resource,play thread id = " + Thread.currentThread().getId());
-            try{
-                Log.d(TAG, "play resource : " + resId);
-                mUPnpWrapper.play(resId);
-                Log.d(TAG, "play resource down : " + resId);
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-
-        }
-    }
-
     void showDevice(ArrayList<PltDeviceData> list){
         ArrayList<Map<String, String>> status = new ArrayList<Map<String, String>>();
 
@@ -301,11 +282,12 @@ public class PlatinumDLNA extends AppCompatActivity{
         singleChoiceDialog.setTitle("Choose a Render");
         // 第二个参数是默认选项，此处设置为0
 
-        singleChoiceDialog.setSingleChoiceItems(items, 0,
+        singleChoiceDialog.setSingleChoiceItems(items, yourChoice,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mActiveMediaRender = dmrlist.get(which);
+                        yourChoice = which;
+                        mActiveMediaRender = ((ArrayList<PltDeviceData>)mUPnpWrapper.getDmrList()).get(which);
                         mUPnpWrapper.setActiveDmr(mActiveMediaRender.uuid);
                         Log.d(TAG, "get mActiveMediaRender = " + mUPnpWrapper.getActiveDmr());
                     }
@@ -318,7 +300,7 @@ public class PlatinumDLNA extends AppCompatActivity{
                         if (mActiveMediaRender != null){
                             if (yourChoice != -1) {
                                 Toast.makeText(PlatinumDLNA.this,
-                                        "你选择了" + mActiveMediaRender.uuid,
+                                        "你选择了" + mActiveMediaRender.friendlyName,
                                         Toast.LENGTH_SHORT).show();
                             }
                         }

@@ -33,7 +33,7 @@
             android:layout_height="match_parent"
             android:clickable="true"
             android:id="@+id/dmslist"
-            android:layout_weight="0.98"
+            android:layout_weight="0.91"
             android:textSize="18sp"
             android:textAlignment="textStart"
             android:gravity="center" />
