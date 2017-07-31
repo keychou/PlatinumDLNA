@@ -2,11 +2,6 @@ package com.plutinosoft.platinum;
 
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-
 public class UPnP {
     public static final String TAG = "PlatinumDLNA";
     public static final String VERSION_OF_PLATITUMDLNA = "1.0.2";

@@ -43,18 +43,6 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
         uPnP.setDeviceStatusChangeListener(this);
     }
 
-    public int start() {
-        return uPnP.start();
-    }
-
-    public int stop() {
-        return uPnP.stop();
-    }
-
-    public int setActiveDms(String uuid){
-        return uPnP.setActiveDms(uuid);
-    }
-
     public ArrayList getDmsList() {
         return DmsList;
     }
