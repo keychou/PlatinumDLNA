@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class UPnP {
     public static final String TAG = "PlatinumDLNA";
-    public static final String VERSION_OF_PLATITUMDLNA = "1.0.2";
+    public static final String VERSION_OF_PLATITUMDLNA = "1.0.5";
 
     public interface DeviceStatusChangeListener{
         public void onDmsAdded(PltDeviceData pltDeviceData);
