@@ -64,6 +64,8 @@ public class UpnpController extends AppCompatActivity {
 
         @Override
         public void run() {
+            this.setName("playThread - " + Thread.currentThread().getId());
+            Thread.currentThread().setName("playThread - " + Thread.currentThread().getId());
             Log.d(TAG, "wait play resour ce,play thread id = " + Thread.currentThread().getId());
             try{
                 Log.d(TAG, "play resource : " + resid);

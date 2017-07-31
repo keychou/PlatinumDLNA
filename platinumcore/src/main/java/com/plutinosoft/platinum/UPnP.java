@@ -55,10 +55,12 @@ public class UPnP {
     public MediaObject[] lsFiles() {
 
         MediaObject[] mediaObjects = _lsFiles();
-        for(int i = 0; i < mediaObjects.length; i++){
-            Log.d(TAG, "mediaObjects["+ i + "] = " + mediaObjects[i]);
-        }
 
+        if ((mediaObjects != null)){
+            for(int i = 0; i < mediaObjects.length; i++){
+                Log.d(TAG, "mediaObjects["+ i + "] = " + mediaObjects[i]);
+            }
+        }
 
         return _lsFiles();
     }
@@ -151,7 +153,7 @@ public class UPnP {
     private native int _mediastop();
     private native int _mute();
     private native int _unmute();
-	
+
     private final long cSelf;
 
     static {

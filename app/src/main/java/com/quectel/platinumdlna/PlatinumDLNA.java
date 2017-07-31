@@ -57,7 +57,6 @@ public class PlatinumDLNA extends AppCompatActivity{
     public PltDeviceData mActiveMediaRender;
     public String resId;
     public FileManager fileManager;
-    MediaObject currentObject = null;
 
     MyHandler myHandler = new MyHandler();
 
@@ -124,33 +123,39 @@ public class PlatinumDLNA extends AppCompatActivity{
 
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    showFiles(mediaObjectArrayList);
-
-                    mActiveMediaServer = pltDeviceData;
-
-                    tvTitle.setText(pltDeviceData.friendlyName);
-
-                    listviewtype = LISTVIEW_TYPE_DIR;
+                    if (mediaObjectArrayList != null){
+                        mActiveMediaServer = pltDeviceData;
+                        showFiles(mediaObjectArrayList);
+                        tvTitle.setText(pltDeviceData.friendlyName);
+                        listviewtype = LISTVIEW_TYPE_DIR;
+                    }else{
+                        Toast.makeText(PlatinumDLNA.this, "当前目录下没有文件", Toast.LENGTH_SHORT).show();
+                    }
 
                 } else if (listviewtype == LISTVIEW_TYPE_DIR) {
-
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
-                    currentObject = mediaObjectArrayList.get(position);
 
-                    Log.d(TAG, "show items under " + currentObject.m_ObjectID);
+                    MediaObject mediaObject = mediaObjectArrayList.get(position);
 
-                    tvTitle.setText(currentObject.m_ObjectID);
-
-                    fileManager.setObjectId(currentObject.m_ObjectID);
+                    fileManager.setObjectId(mediaObject.m_ObjectID);
 
                     mediaObjectArrayList = fileManager.listFiles();
 
-                    showFiles(mediaObjectArrayList);
+                    if (mediaObjectArrayList != null){
 
-                    listviewtype = LISTVIEW_TYPE_ITEM;
+                        Log.d(TAG, "show items under " + mediaObject.m_ObjectID);
+                        tvTitle.setText(mediaObject.m_ObjectID);
+                        showFiles(mediaObjectArrayList);
+                        listviewtype = LISTVIEW_TYPE_ITEM;
 
+                    }else{
+                        mUPnpWrapper.cdup();
+                        Toast.makeText(PlatinumDLNA.this, "当前目录下没有文件", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (listviewtype == LISTVIEW_TYPE_ITEM){
+
+                    fileManager.changeDirectory();
 
                     ArrayList<MediaObject> mediaObjectArrayList = fileManager.listFiles();
 
@@ -178,7 +183,6 @@ public class PlatinumDLNA extends AppCompatActivity{
                     showDevice(dmslist);
                     tvTitle.setText("DMS服务器列表");
 
-                    currentObject = null;
                     listviewtype = LISTVIEW_TYPE_DEV;
 
                 } else if (listviewtype == LISTVIEW_TYPE_ITEM){
@@ -250,24 +254,18 @@ public class PlatinumDLNA extends AppCompatActivity{
                 map.put("title", list.get(i).m_Title);
                 status.add(map);
             }
-        }else{
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put("objectId", "empty directory");
-            map.put("title", "");
-            status.add(map);
+
+            simpleAdapter = new SimpleAdapter(
+                    this,
+                    status,
+                    R.layout.file_item,
+                    new String[]{"objectId", "title"},
+                    new int[]{R.id.object_title, R.id.object_id});
+
+            lvShowList.setAdapter(simpleAdapter);
+            ibBack.setVisibility(View.VISIBLE);
+
         }
-
-        simpleAdapter = new SimpleAdapter(
-                this,
-                status,
-                R.layout.file_item,
-                new String[]{"objectId", "title"},
-                new int[]{R.id.object_title, R.id.object_id});
-
-        lvShowList.setAdapter(simpleAdapter);
-        ibBack.setVisibility(View.VISIBLE);
-
-
     }
 
     String[] items;

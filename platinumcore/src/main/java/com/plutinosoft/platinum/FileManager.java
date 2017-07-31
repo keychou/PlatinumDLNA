@@ -39,8 +39,12 @@ public class FileManager {
     public ArrayList<MediaObject> listFiles(){
         MediaObject[] mediaObjects = mUPnP.lsFiles();
 
+        ArrayList<MediaObject> mediaObjectArrayList = null;
 
-        ArrayList<MediaObject> mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
+        if (mediaObjects != null){
+            mediaObjectArrayList = new ArrayList<MediaObject>(Arrays.asList(mediaObjects));
+        }
+
         return mediaObjectArrayList;
 
     }
