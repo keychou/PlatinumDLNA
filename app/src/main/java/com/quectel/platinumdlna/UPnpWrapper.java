@@ -67,6 +67,7 @@ public class UPnpWrapper extends UPnP implements UPnP.DeviceStatusChangeListener
     public void onDmrAdded(PltDeviceData pltDeviceData){
         Log.d(TAG, "dmr add, pltDeviceData:" + pltDeviceData);
         DmrList.add(pltDeviceData);
+
     }
 
     @Override

@@ -28,6 +28,7 @@ public class UpnpController extends AppCompatActivity {
         mActiveMediaServer = mUPnpWrapper.getActiveDms();
         mActiveMediaRender = mUPnpWrapper.getActiveDmr();
         (new MediaPlayThread()).start();
+
     }
 
 
